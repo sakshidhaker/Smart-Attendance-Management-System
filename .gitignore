@@ -1,0 +1,20 @@
+# dependencies
+node_modules/
+
+# secrets (kabhi upload nahi karna)
+.env
+.env.*
+!.env.example
+
+# build output
+dist/
+build/
+
+# logs aur system files
+*.log
+npm-debug.log*
+.DS_Store
+
+# Postman: tokens aur secrets yahan reh sakte hain
+postman/environments/
+postman/globals/
