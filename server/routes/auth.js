@@ -15,6 +15,12 @@ const safeUser = (u) => ({
 router.post("/register", async (req, res) => {
   try {
     const { name, email, password, rollNo, semester } = req.body;
+    if (typeof email !== "string" || typeof password !== "string") {
+  return res.status(400).json({ message: "Invalid input" });
+}
+if ([name, email, password].some((v) => typeof v !== "string")) {
+  return res.status(400).json({ message: "Invalid input" });
+}
     if (!name || !email || !password) {
       return res.status(400).json({ message: "name, email, password required" });
     }
