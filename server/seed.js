@@ -60,6 +60,9 @@ const Attendance = require("./models/Attendance");
   }
 
   await Attendance.insertMany(docs);
+  // indexes ban chuke hain ya nahi, confirm
+  await Promise.all([User.init(), Subject.init(), Attendance.init()]);
+
   console.log(`Done: ${students.length} students, ${subjects.length} subjects, ${docs.length} attendance sheets`);
   console.log("Logins -> admin@test.com | faculty1@test.com | student1@test.com (password: 123456)");
   process.exit(0);

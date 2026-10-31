@@ -3,15 +3,25 @@ const bcrypt = require("bcryptjs");
 
 const userSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true, trim: true },
-    email: { type: String, required: true, unique: true, lowercase: true, trim: true },
+    name: { type: String, required: [true, "Name is required"], trim: true, minlength: 2, maxlength: 60 },
+    email: {
+      type: String,
+      required: [true, "Email is required"],
+      unique: true, // unique index (login ke time email se search hota hai)
+      lowercase: true,
+      trim: true,
+      match: [/^\S+@\S+\.\S+$/, "Invalid email"],
+    },
     password: { type: String, required: true, minlength: 6, select: false },
     role: { type: String, enum: ["admin", "faculty", "student"], default: "student" },
-    rollNo: { type: String },
-    semester: { type: Number },
+    rollNo: { type: String, trim: true },
+    semester: { type: Number, min: 1, max: 8 },
   },
   { timestamps: true }
 );
+
+// Admin ki list filter (role + semester) fast ho
+userSchema.index({ role: 1, semester: 1 });
 
 // save se pehle password hash ho jayega
 userSchema.pre("save", async function () {

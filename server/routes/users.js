@@ -1,77 +1,43 @@
 const express = require("express");
-const mongoose = require("mongoose");
-const User = require("../models/User");
 const { protect, authorize } = require("../middleware/auth");
+const { validateBody, validateObjectId } = require("../middleware/validate");
+const { listUsers, getUser, createUser, updateUser, deleteUser } = require("../controllers/userController");
 
 const router = express.Router();
 router.use(protect, authorize("admin"));
 
-const clean = (u) => {
-  const obj = u.toObject();
-  delete obj.password;
-  return obj;
-};
+const roles = ["admin", "faculty", "student"];
 
-// GET /api/users?role=student&semester=5
-router.get("/", async (req, res) => {
-  try {
-    const filter = {};
-    if (req.query.role) filter.role = req.query.role;
-    if (req.query.semester) filter.semester = Number(req.query.semester);
-    res.json(await User.find(filter).sort("name"));
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+router.get("/", listUsers);
+router.get("/:id", validateObjectId("id"), getUser);
 
-// POST /api/users
-router.post("/", async (req, res) => {
-  try {
-    const { name, email, password, role, rollNo, semester } = req.body;
-    if (!name || !email || !password) {
-      return res.status(400).json({ message: "name, email, password required" });
-    }
-    if (await User.findOne({ email })) {
-      return res.status(400).json({ message: "Email already exists" });
-    }
-    const user = await User.create({ name, email, password, role, rollNo, semester });
-    res.status(201).json(clean(user));
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+router.post(
+  "/",
+  validateBody({
+    name: { required: true, type: "string", min: 2, max: 60 },
+    email: { required: true, type: "email" },
+    password: { required: true, type: "string", min: 6, max: 100 },
+    role: { type: "string", oneOf: roles },
+    rollNo: { type: "string", max: 30 },
+    semester: { type: "integer", min: 1, max: 8 },
+  }),
+  createUser
+);
 
-// PUT /api/users/:id
-router.put("/:id", async (req, res) => {
-  try {
-    if (!mongoose.isValidObjectId(req.params.id)) {
-      return res.status(400).json({ message: "Invalid id" });
-    }
-    const user = await User.findById(req.params.id);
-    if (!user) return res.status(404).json({ message: "User not found" });
+router.put(
+  "/:id",
+  validateObjectId("id"),
+  validateBody({
+    name: { type: "string", min: 2, max: 60 },
+    email: { type: "email" },
+    password: { type: "string", min: 6, max: 100 },
+    role: { type: "string", oneOf: roles },
+    rollNo: { type: "string", max: 30 },
+    semester: { type: "integer", min: 1, max: 8 },
+  }),
+  updateUser
+);
 
-    ["name", "email", "password", "role", "rollNo", "semester"].forEach((f) => {
-      if (req.body[f] !== undefined && req.body[f] !== "") user[f] = req.body[f];
-    });
-    await user.save();
-    res.json(clean(user));
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
-// DELETE /api/users/:id
-router.delete("/:id", async (req, res) => {
-  try {
-    if (!mongoose.isValidObjectId(req.params.id)) {
-      return res.status(400).json({ message: "Invalid id" });
-    }
-    const user = await User.findByIdAndDelete(req.params.id);
-    if (!user) return res.status(404).json({ message: "User not found" });
-    res.json({ message: "User deleted" });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+router.delete("/:id", validateObjectId("id"), deleteUser);
 
 module.exports = router;

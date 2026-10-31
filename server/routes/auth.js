@@ -1,57 +1,42 @@
 const express = require("express");
-const jwt = require("jsonwebtoken");
-const User = require("../models/User");
 const { protect } = require("../middleware/auth");
+const { validateBody } = require("../middleware/validate");
+const { register, login, getMe, updateMe } = require("../controllers/authController");
 
 const router = express.Router();
 
-const makeToken = (id) => jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+router.post(
+  "/register",
+  validateBody({
+    name: { required: true, type: "string", min: 2, max: 60 },
+    email: { required: true, type: "email" },
+    password: { required: true, type: "string", min: 6, max: 100 },
+    rollNo: { type: "string", max: 30 },
+    semester: { type: "integer", min: 1, max: 8 },
+  }),
+  register
+);
 
-const safeUser = (u) => ({
-  id: u._id, name: u.name, email: u.email, role: u.role, rollNo: u.rollNo, semester: u.semester,
-});
+router.post(
+  "/login",
+  validateBody({
+    email: { required: true, type: "string" },
+    password: { required: true, type: "string" },
+  }),
+  login
+);
 
-// POST /api/auth/register  (sirf student)
-router.post("/register", async (req, res) => {
-  try {
-    const { name, email, password, rollNo, semester } = req.body;
-    if (typeof email !== "string" || typeof password !== "string") {
-  return res.status(400).json({ message: "Invalid input" });
-}
-if ([name, email, password].some((v) => typeof v !== "string")) {
-  return res.status(400).json({ message: "Invalid input" });
-}
-    if (!name || !email || !password) {
-      return res.status(400).json({ message: "name, email, password required" });
-    }
-    if (await User.findOne({ email })) {
-      return res.status(400).json({ message: "Email already registered" });
-    }
-    const user = await User.create({ name, email, password, role: "student", rollNo, semester });
-    res.status(201).json({ token: makeToken(user._id), user: safeUser(user) });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+router.get("/me", protect, getMe);
 
-// POST /api/auth/login
-router.post("/login", async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    if (!email || !password) {
-      return res.status(400).json({ message: "email and password required" });
-    }
-    const user = await User.findOne({ email }).select("+password");
-    if (!user || !(await user.matchPassword(password))) {
-      return res.status(400).json({ message: "Invalid credentials" });
-    }
-    res.json({ token: makeToken(user._id), user: safeUser(user) });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
-// GET /api/auth/me
-router.get("/me", protect, (req, res) => res.json(safeUser(req.user)));
+router.put(
+  "/me",
+  protect,
+  validateBody({
+    name: { type: "string", min: 2, max: 60 },
+    currentPassword: { type: "string" },
+    newPassword: { type: "string", min: 6, max: 100 },
+  }),
+  updateMe
+);
 
 module.exports = router;
