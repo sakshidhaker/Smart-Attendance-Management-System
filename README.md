@@ -88,8 +88,9 @@ Node.js 18 or later, a MongoDB Atlas cluster (or local MongoDB), Git.
 ### 1. Install
 
 ```bash
-git clone <your-repo-url>
-cd attendance-system_MERNPROJECT
+git clone  https://github.com/sakshidhaker/Smart-Attendance-Management-System.git
+cd Smart-Attendance-Management-System
+
 
 cd server
 npm install
@@ -180,4 +181,5 @@ With `p` attended and `t` total lectures: percentage = `p / t * 100`; lectures t
 
 ## Author
 
-Sakshi, B.Tech final year, Swami Keshvanand Institute of Technology (SKIT), Jaipur.
+Sakshi, B.Tech 3rd
+ year, Swami Keshvanand Institute of Technology (SKIT), Jaipur.
