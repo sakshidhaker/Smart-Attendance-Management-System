@@ -1,4 +1,4 @@
-// Controllers me `throw new ApiError(404, "Not found")` likhne ke liye
+// lets controllers write `throw new ApiError(404, "Not found")`
 class ApiError extends Error {
   constructor(status, message, errors) {
     super(message);

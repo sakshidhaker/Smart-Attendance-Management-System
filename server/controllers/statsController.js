@@ -8,7 +8,7 @@ const DAY = 24 * 60 * 60 * 1000;
 const presentSum = { $sum: { $cond: [{ $eq: ["$records.status", "present"] }, 1, 0] } };
 
 // GET /api/stats/overview  (admin + faculty dashboard)
-// Yahan MongoDB aggregation pipelines se summary metrics nikalte hain (Database Optimization)
+// Summary metrics are computed with MongoDB aggregation pipelines (database optimization)
 exports.overview = asyncHandler(async (req, res) => {
   const isAdmin = req.user.role === "admin";
   const subjects = await Subject.find(isAdmin ? {} : { faculty: req.user._id }).select("name code students");
@@ -24,13 +24,13 @@ exports.overview = asyncHandler(async (req, res) => {
       { $unwind: "$records" },
       { $group: { _id: "$subject", total: { $sum: 1 }, present: presentSum } },
     ]),
-    // student-wise present/total (at-risk count ke liye)
+    // student-wise present/total (used for the at-risk count)
     Attendance.aggregate([
       { $match: match },
       { $unwind: "$records" },
       { $group: { _id: "$records.student", total: { $sum: 1 }, present: presentSum } },
     ]),
-    // pichhle 30 din ka date-wise trend
+    // date-wise trend for the last 30 days
     Attendance.aggregate([
       { $match: { ...match, date: { $gte: since } } },
       { $unwind: "$records" },

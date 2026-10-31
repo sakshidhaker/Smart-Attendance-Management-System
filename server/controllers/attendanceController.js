@@ -8,17 +8,17 @@ const { calcStats } = require("../utils/stats");
 
 const DAY = 24 * 60 * 60 * 1000;
 
-// faculty sirf apne subject ko manage kar sakti hai, admin sabko
+// a faculty member can manage only their own subjects, an admin can manage all
 const canManage = (user, subject) => user.role === "admin" || String(subject.faculty) === String(user._id);
 
-// date ko UTC midnight bana do, taaki unique index (subject + date + period) sahi chale
+// normalise the date to UTC midnight so the unique index (subject + date + period) works correctly
 const normalizeDate = (value) => {
   const d = new Date(value);
   d.setUTCHours(0, 0, 0, 0);
   return d;
 };
 
-// records me sirf us subject ke enrolled students, sahi status, aur koi duplicate student nahi
+// records may contain only students enrolled in the subject, a valid status and no duplicate student
 const recordsValid = (subject, records) => {
   const enrolled = new Set(subject.students.map(String));
   const seen = new Set();
@@ -37,7 +37,7 @@ const loadManagedSubject = async (subjectId, user) => {
   return subject;
 };
 
-// Ek subject ke har student ka present/total (aggregation pipeline)
+// present/total of every student in one subject (aggregation pipeline)
 const buildSubjectSummary = async (subject) => {
   const rows = await Attendance.aggregate([
     { $match: { subject: subject._id } },
@@ -126,14 +126,14 @@ exports.getAttendance = asyncHandler(async (req, res) => {
   res.json(att);
 });
 
-// GET /api/attendance/subject/:subjectId/summary -> subject ke saare students ka %
+// GET /api/attendance/subject/:subjectId/summary -> percentage of every student in the subject
 exports.subjectSummary = asyncHandler(async (req, res) => {
   const subject = await loadManagedSubject(req.params.subjectId, req.user);
   const summary = await buildSubjectSummary(subject);
   res.json({ subject: { id: subject._id, name: subject.name, code: subject.code, semester: subject.semester }, ...summary });
 });
 
-// GET /api/attendance/at-risk?subject=ID -> 75% se kam wale students
+// GET /api/attendance/at-risk?subject=ID -> students below 75%
 exports.atRisk = asyncHandler(async (req, res) => {
   const { subject: subjectId } = req.query;
   if (!mongoose.isValidObjectId(subjectId)) throw new ApiError(400, "Valid subject id required");

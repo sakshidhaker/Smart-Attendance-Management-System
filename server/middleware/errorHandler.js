@@ -1,6 +1,6 @@
 const ApiError = require("../utils/ApiError");
 
-// Koi route match na ho to 404
+// 404 when no route matches
 exports.notFound = (req, res, next) => next(new ApiError(404, `Route not found: ${req.method} ${req.originalUrl}`));
 
 const DUPLICATE_MESSAGES = {
@@ -8,7 +8,7 @@ const DUPLICATE_MESSAGES = {
   code: "Subject code already exists",
 };
 
-// Poore backend ka ek hi error handler (central error handling)
+// One error handler for the whole backend (central error handling)
 // eslint-disable-next-line no-unused-vars
 exports.errorHandler = (err, req, res, next) => {
   let status = err.status || 500;

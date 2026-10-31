@@ -1,4 +1,4 @@
-// label + input + error message ka reusable wrapper
+// reusable wrapper: label + input + error message
 export default function FormField({ label, error, hint, children }) {
   return (
     <div className="field">

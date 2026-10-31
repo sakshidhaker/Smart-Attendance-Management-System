@@ -10,7 +10,7 @@ import EmptyState from "../components/EmptyState";
 import PageHeader from "../components/PageHeader";
 import StatCard from "../components/StatCard";
 
-// Admin + Faculty dashboard (data MongoDB aggregation se aata hai)
+// Admin + Faculty dashboard (the data comes from MongoDB aggregation)
 export default function Dashboard() {
   const { user } = useAuth();
   const [data, setData] = useState(null);
@@ -20,18 +20,18 @@ export default function Dashboard() {
     api
       .get("/stats/overview")
       .then((res) => setData(res.data))
-      .catch((err) => toast.error(errorMessage(err, "Dashboard load nahi hua")))
+      .catch((err) => toast.error(errorMessage(err, "Could not load the dashboard")))
       .finally(() => setLoading(false));
   }, []);
 
   if (loading) return <Loader />;
-  if (!data) return <EmptyState title="Dashboard unavailable" text="Server se data nahi aa paaya." />;
+  if (!data) return <EmptyState title="Dashboard unavailable" text="The server did not return any data." />;
 
   const { totals, overall, subjects, trend, usersByRole } = data;
 
   return (
     <div>
-      <PageHeader title="Dashboard" subtitle={user.role === "admin" ? "Poore college ka overview" : "Aapke subjects ka overview"}>
+      <PageHeader title="Dashboard" subtitle={user.role === "admin" ? "Overview of the whole college" : "Overview of your subjects"}>
         <Link className="btn primary" to="/mark">
           Mark Attendance
         </Link>
@@ -70,7 +70,7 @@ export default function Dashboard() {
       <h3 className="section">Last 30 days trend</h3>
       <div className="card" style={{ height: 280 }}>
         {trend.length === 0 ? (
-          <EmptyState title="No recent attendance" text="Pichle 30 din me koi attendance mark nahi hui." />
+          <EmptyState title="No recent attendance" text="No attendance was marked in the last 30 days." />
         ) : (
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={trend}>

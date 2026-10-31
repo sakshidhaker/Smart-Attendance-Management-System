@@ -33,7 +33,7 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* Login ke baad ke saare pages Layout (sidebar + navbar) ke andar */}
+        {/* All pages after login are rendered inside the Layout (sidebar + navbar) */}
         <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
           <Route path="/my-attendance" element={<ProtectedRoute roles={["student"]}><MyAttendance /></ProtectedRoute>} />
           <Route path="/dashboard" element={<ProtectedRoute roles={STAFF}><Dashboard /></ProtectedRoute>} />

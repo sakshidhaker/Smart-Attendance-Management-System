@@ -39,7 +39,7 @@ export default function AtRisk() {
         else setLoading(false);
       })
       .catch((err) => {
-        toast.error(errorMessage(err, "Subjects load nahi hue"));
+        toast.error(errorMessage(err, "Could not load subjects"));
         setLoading(false);
       });
   }, []);
@@ -50,13 +50,13 @@ export default function AtRisk() {
     api
       .get(`/attendance/at-risk?subject=${subjectId}`)
       .then((res) => setRows(res.data))
-      .catch((err) => toast.error(errorMessage(err, "Data load nahi hua")))
+      .catch((err) => toast.error(errorMessage(err, "Could not load data")))
       .finally(() => setLoading(false));
   }, [subjectId]);
 
   return (
     <div>
-      <PageHeader title="At-Risk Students" subtitle="75% se kam attendance wale students" />
+      <PageHeader title="At-Risk Students" subtitle="Students with attendance below 75%" />
 
       {subjects.length > 0 && (
         <div className="card filters one">
@@ -78,7 +78,7 @@ export default function AtRisk() {
         <EmptyState title="No subjects" />
       ) : (
         <div className="card">
-          <DataTable columns={columns} rows={rows} rowKey={(r) => r.student.id} emptyTitle="All good!" emptyText="Is subject me koi student 75% se neeche nahi hai." />
+          <DataTable columns={columns} rows={rows} rowKey={(r) => r.student.id} emptyTitle="All good!" emptyText="No student in this subject is below 75%." />
         </div>
       )}
     </div>

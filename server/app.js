@@ -8,12 +8,12 @@ const { notFound, errorHandler } = require("./middleware/errorHandler");
 const app = express();
 
 app.use(helmet());
-// CLIENT_URL me comma se ek se zyada origins bhi likh sakte hain
+// CLIENT_URL may hold more than one origin, separated by commas
 app.use(cors({ origin: (process.env.CLIENT_URL || "http://localhost:5173").split(",").map((s) => s.trim()) }));
 app.use(express.json({ limit: "10kb" }));
 app.use(logger);
 
-// login/register pe 15 min me 20 try se zyada nahi (brute force se bachav)
+// at most 20 login/register attempts per 15 minutes (protection against brute force)
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 20,

@@ -8,7 +8,7 @@ router.use(protect);
 
 const staff = authorize("faculty", "admin");
 
-// dhyan: fixed paths (/at-risk, /subject/..., /student/...) hamesha /:id se pehle aane chahiye
+// note: fixed paths (/at-risk, /subject/..., /student/...) must always come before /:id
 router.get("/at-risk", staff, c.atRisk);
 router.get("/subject/:subjectId/summary", staff, validateObjectId("subjectId"), c.subjectSummary);
 router.get("/student/:id", validateObjectId("id"), c.studentStats);

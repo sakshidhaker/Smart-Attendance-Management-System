@@ -11,7 +11,7 @@ import ConfirmModal from "../components/ConfirmModal";
 
 const EMPTY = { name: "", email: "", password: "", role: "student", rollNo: "", semester: "" };
 
-// Admin: Users ka poora CRUD (list, add, edit, delete)
+// Admin: full CRUD for users (list, add, edit, delete)
 export default function Users() {
   const searchRef = useRef(null);
   const [users, setUsers] = useState([]);
@@ -33,11 +33,11 @@ export default function Users() {
     api
       .get(`/users?${params.toString()}`)
       .then((res) => setUsers(res.data))
-      .catch((err) => toast.error(errorMessage(err, "Users load nahi hue")))
+      .catch((err) => toast.error(errorMessage(err, "Could not load users")))
       .finally(() => setLoading(false));
   }, [role, q]);
 
-  // search type karte waqt har key pe API call na ho, isliye 300ms ruk ke
+  // debounce: wait 300 ms so that every keystroke does not trigger an API call
   useEffect(() => {
     const t = setTimeout(load, 300);
     return () => clearTimeout(t);
@@ -80,7 +80,7 @@ export default function Users() {
       setModalOpen(false);
       load();
     } catch (err) {
-      toast.error(errorMessage(err, "Save nahi hua"));
+      toast.error(errorMessage(err, "Could not save"));
     } finally {
       setBusy(false);
     }
@@ -94,7 +94,7 @@ export default function Users() {
       setDeleting(null);
       load();
     } catch (err) {
-      toast.error(errorMessage(err, "Delete nahi hua"));
+      toast.error(errorMessage(err, "Could not delete"));
       setDeleting(null);
     } finally {
       setBusy(false);
@@ -125,7 +125,7 @@ export default function Users() {
 
   return (
     <div>
-      <PageHeader title="Users" subtitle="Students, faculty aur admins manage karo">
+      <PageHeader title="Users" subtitle="Manage students, faculty and admins">
         <button className="btn primary" onClick={openAdd}>
           + Add user
         </button>
@@ -133,7 +133,7 @@ export default function Users() {
 
       <div className="card filters two">
         <FormField label="Search">
-          <input ref={searchRef} value={q} onChange={(e) => setQ(e.target.value)} placeholder="Name, email ya roll no" />
+          <input ref={searchRef} value={q} onChange={(e) => setQ(e.target.value)} placeholder="Name, email or roll number" />
         </FormField>
         <FormField label="Role">
           <select value={role} onChange={(e) => setRole(e.target.value)}>
@@ -160,7 +160,7 @@ export default function Users() {
         <Loader />
       ) : (
         <div className="card">
-          <DataTable columns={columns} rows={users} emptyTitle="No users found" emptyText="Filter badal ke dekho ya naya user add karo." />
+          <DataTable columns={columns} rows={users} emptyTitle="No users found" emptyText="Change the filter or add a new user." />
         </div>
       )}
 
@@ -172,7 +172,7 @@ export default function Users() {
           <FormField label="Email" error={errors.email}>
             <input name="email" type="email" value={form.email} onChange={change} />
           </FormField>
-          <FormField label="Password" error={errors.password} hint={editId ? "Khaali chhodo to purana password rahega" : "At least 6 characters"}>
+          <FormField label="Password" error={errors.password} hint={editId ? "Leave blank to keep the current password" : "At least 6 characters"}>
             <input name="password" type="password" value={form.password} onChange={change} />
           </FormField>
           <FormField label="Role">
@@ -212,7 +212,7 @@ export default function Users() {
 
       <ConfirmModal
         open={!!deleting}
-        message={deleting ? `${deleting.name} (${deleting.email}) ko delete karna hai?` : ""}
+        message={deleting ? `Delete ${deleting.name} (${deleting.email})?` : ""}
         loading={busy}
         onConfirm={confirmDelete}
         onCancel={() => setDeleting(null)}

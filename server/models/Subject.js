@@ -11,7 +11,7 @@ const subjectSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// "faculty ke subjects" aur "student ke subjects" queries ke liye
+// for the "subjects of a faculty" and "subjects of a student" queries
 subjectSchema.index({ faculty: 1 });
 subjectSchema.index({ students: 1 });
 

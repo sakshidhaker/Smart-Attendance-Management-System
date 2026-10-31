@@ -26,7 +26,7 @@ export default function Profile() {
       updateUser(data);
       toast.success("Profile updated");
     } catch (err) {
-      toast.error(errorMessage(err, "Update nahi hua"));
+      toast.error(errorMessage(err, "Could not update"));
     } finally {
       setBusy(false);
     }
@@ -44,7 +44,7 @@ export default function Profile() {
       toast.success("Password changed");
       setPw({ currentPassword: "", newPassword: "", confirm: "" });
     } catch (err) {
-      toast.error(errorMessage(err, "Password change nahi hua"));
+      toast.error(errorMessage(err, "Could not change the password"));
     } finally {
       setBusy(false);
     }
@@ -52,7 +52,7 @@ export default function Profile() {
 
   return (
     <div>
-      <PageHeader title="Profile & Settings" subtitle="Apni details aur password manage karo" />
+      <PageHeader title="Profile & Settings" subtitle="Manage your details and password" />
 
       <div className="grid two">
         <div className="card">

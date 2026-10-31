@@ -8,7 +8,7 @@ export default function NotFound() {
   return (
     <div className="login-wrap">
       <div className="login-card">
-        <EmptyState title="404 - Page not found" text="Ye page exist nahi karta.">
+        <EmptyState title="404 - Page not found" text="This page does not exist.">
           <Link className="btn primary" to={user ? homeFor(user.role) : "/login"}>
             Go to home
           </Link>

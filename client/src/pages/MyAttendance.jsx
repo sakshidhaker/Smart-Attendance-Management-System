@@ -9,15 +9,15 @@ import EmptyState from "../components/EmptyState";
 import PageHeader from "../components/PageHeader";
 import StatusBadge from "../components/StatusBadge";
 
-// Bunk Planner ka message
+// Bunk Planner message
 function planner(s) {
-  if (s.total === 0) return "Abhi tak koi class mark nahi hui";
+  if (s.total === 0) return "No class has been marked yet";
   if (s.status === "safe") {
     return s.safeBunks > 0
-      ? `Tu abhi ${s.safeBunks} lecture aur miss kar sakta hai, 75% safe rahega`
-      : "75% pe hai, ab koi lecture miss mat kar";
+      ? `You can still miss ${s.safeBunks} more lecture${s.safeBunks === 1 ? "" : "s"} and stay at 75% or above`
+      : "You are right at 75%, do not miss any more lectures";
   }
-  return `75% wapas pane ke liye lagatar ${s.classesNeeded} lecture attend kar`;
+  return `Attend the next ${s.classesNeeded} lecture${s.classesNeeded === 1 ? "" : "s"} in a row to get back to 75%`;
 }
 
 export default function MyAttendance() {
@@ -29,13 +29,13 @@ export default function MyAttendance() {
     api
       .get(`/attendance/student/${user.id}`)
       .then((res) => setData(res.data))
-      .catch((err) => toast.error(errorMessage(err, "Attendance load nahi hui")))
+      .catch((err) => toast.error(errorMessage(err, "Could not load attendance")))
       .finally(() => setLoading(false));
   }, [user.id]);
 
   if (loading) return <Loader />;
   if (!data || data.subjects.length === 0) {
-    return <EmptyState title="No attendance yet" text="Abhi tak aapki koi attendance record nahi hui." />;
+    return <EmptyState title="No attendance yet" text="No attendance has been recorded for you yet." />;
   }
 
   const { overall, subjects } = data;
@@ -43,7 +43,7 @@ export default function MyAttendance() {
 
   return (
     <div>
-      <PageHeader title="My Attendance" subtitle="Subject-wise percentage aur Bunk Planner" />
+      <PageHeader title="My Attendance" subtitle="Subject-wise percentage and Bunk Planner" />
 
       <div className="card hero" style={{ borderLeft: `6px solid ${STATUS_COLORS[overall.status]}` }}>
         <div>
@@ -52,7 +52,7 @@ export default function MyAttendance() {
           <StatusBadge status={overall.status} />
         </div>
         <div className="hero-note">
-          {overall.present} / {overall.total} lectures attend kiye
+          {overall.present} / {overall.total} lectures attended
           <div className="planner">{planner(overall)}</div>
         </div>
       </div>

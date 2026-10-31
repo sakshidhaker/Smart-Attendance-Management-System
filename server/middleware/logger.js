@@ -1,4 +1,4 @@
-// Custom request logger: har request ka method, url, status aur time print karta hai
+// Custom request logger: prints method, URL, status and time of every request
 module.exports = (req, res, next) => {
   if (process.env.NODE_ENV === "test") return next();
   const start = Date.now();

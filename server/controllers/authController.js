@@ -6,7 +6,7 @@ const formatUser = require("../utils/formatUser");
 
 const makeToken = (id) => jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
-// POST /api/auth/register  (public register se hamesha student hi banta hai)
+// POST /api/auth/register  (public registration always creates a student)
 exports.register = asyncHandler(async (req, res) => {
   const { name, email, password, rollNo, semester } = req.body;
 
@@ -29,7 +29,7 @@ exports.getMe = asyncHandler(async (req, res) => {
   res.json(formatUser(req.user));
 });
 
-// PUT /api/auth/me  (profile: naam badalna, password badalna)
+// PUT /api/auth/me  (profile: change name or password)
 exports.updateMe = asyncHandler(async (req, res) => {
   const { name, currentPassword, newPassword } = req.body;
 

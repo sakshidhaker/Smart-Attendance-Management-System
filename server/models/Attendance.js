@@ -16,11 +16,11 @@ const attendanceSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Optimization 1: same subject + date + period dobara mark na ho (unique) aur is query ko fast kare
+// Optimization 1: the same subject + date + period cannot be marked twice (unique), and lookups by these fields are fast
 attendanceSchema.index({ subject: 1, date: 1, period: 1 }, { unique: true });
-// Optimization 2: student ki attendance nikalne wali aggregation fast ho
+// Optimization 2: makes the per-student attendance aggregation fast
 attendanceSchema.index({ "records.student": 1 });
-// Optimization 3: dashboard ke date-wise trend ke liye
+// Optimization 3: for the date-wise trend on the dashboard
 attendanceSchema.index({ date: -1 });
 
 module.exports = mongoose.model("Attendance", attendanceSchema);

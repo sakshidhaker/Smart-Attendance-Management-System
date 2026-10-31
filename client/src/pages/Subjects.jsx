@@ -13,7 +13,7 @@ import ConfirmModal from "../components/ConfirmModal";
 
 const EMPTY = { name: "", code: "", semester: "", faculty: "", students: [] };
 
-// Admin: Subjects ka CRUD. Faculty: sirf apne subjects dekh sakti hai
+// Admin: full CRUD for subjects. Faculty: can only view their own subjects
 export default function Subjects() {
   const { user } = useAuth();
   const isAdmin = user.role === "admin";
@@ -33,7 +33,7 @@ export default function Subjects() {
     api
       .get("/subjects")
       .then((res) => setSubjects(res.data))
-      .catch((err) => toast.error(errorMessage(err, "Subjects load nahi hue")))
+      .catch((err) => toast.error(errorMessage(err, "Could not load subjects")))
       .finally(() => setLoading(false));
   }, []);
 
@@ -70,9 +70,9 @@ export default function Subjects() {
   const toggleStudent = (id) =>
     setForm((f) => ({ ...f, students: f.students.includes(id) ? f.students.filter((x) => x !== id) : [...f.students, id] }));
 
-  // form me chuni hui semester ke saare students ek click me
+  // select all students of the chosen semester with one click
   const selectSemester = () => {
-    if (!form.semester) return toast.error("Pehle semester select karo");
+    if (!form.semester) return toast.error("Select a semester first");
     const ids = studentList.filter((st) => st.semester === Number(form.semester)).map((st) => st._id);
     setForm((f) => ({ ...f, students: [...new Set([...f.students, ...ids])] }));
   };
@@ -99,7 +99,7 @@ export default function Subjects() {
       setModalOpen(false);
       load();
     } catch (err) {
-      toast.error(errorMessage(err, "Save nahi hua"));
+      toast.error(errorMessage(err, "Could not save"));
     } finally {
       setBusy(false);
     }
@@ -112,7 +112,7 @@ export default function Subjects() {
       toast.success("Subject deleted");
       load();
     } catch (err) {
-      toast.error(errorMessage(err, "Delete nahi hua"));
+      toast.error(errorMessage(err, "Could not delete"));
     } finally {
       setDeleting(null);
       setBusy(false);
@@ -150,7 +150,7 @@ export default function Subjects() {
 
   return (
     <div>
-      <PageHeader title={isAdmin ? "Subjects" : "My Subjects"} subtitle={isAdmin ? "Subjects, faculty aur enrolled students manage karo" : "Aapko assign kiye gaye subjects"}>
+      <PageHeader title={isAdmin ? "Subjects" : "My Subjects"} subtitle={isAdmin ? "Manage subjects, faculty and enrolled students" : "Subjects assigned to you"}>
         {isAdmin && (
           <button className="btn primary" onClick={openAdd}>
             + Add subject
@@ -162,7 +162,7 @@ export default function Subjects() {
         <Loader />
       ) : (
         <div className="card">
-          <DataTable columns={columns} rows={subjects} emptyTitle="No subjects" emptyText={isAdmin ? "Naya subject add karo." : "Abhi koi subject assign nahi hua."} />
+          <DataTable columns={columns} rows={subjects} emptyTitle="No subjects" emptyText={isAdmin ? "Add a new subject." : "No subject has been assigned to you yet."} />
         </div>
       )}
 
@@ -211,7 +211,7 @@ export default function Subjects() {
             </div>
           </div>
           <div className="checklist">
-            {studentList.length === 0 && <span className="muted small">Koi student nahi mila</span>}
+            {studentList.length === 0 && <span className="muted small">No students found</span>}
             {studentList.map((st) => (
               <label key={st._id} className="check">
                 <input type="checkbox" checked={form.students.includes(st._id)} onChange={() => toggleStudent(st._id)} />
@@ -235,7 +235,7 @@ export default function Subjects() {
 
       <ConfirmModal
         open={!!deleting}
-        message={deleting ? `${deleting.code} - ${deleting.name} delete hone par uski saari attendance bhi delete ho jayegi.` : ""}
+        message={deleting ? `Deleting ${deleting.code} - ${deleting.name} will also delete all of its attendance.` : ""}
         loading={busy}
         onConfirm={confirmDelete}
         onCancel={() => setDeleting(null)}

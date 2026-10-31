@@ -2,14 +2,14 @@ import axios from "axios";
 
 const api = axios.create({ baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api" });
 
-// har request me token khud lag jata hai
+// attach the JWT to every request
 api.interceptors.request.use((cfg) => {
   const token = localStorage.getItem("token");
   if (token) cfg.headers.Authorization = `Bearer ${token}`;
   return cfg;
 });
 
-// token expire ho gaya to login pe bhej do
+// if the token has expired, send the user back to the login page
 api.interceptors.response.use(
   (res) => res,
   (err) => {
@@ -24,8 +24,8 @@ api.interceptors.response.use(
   }
 );
 
-// server ka message ya friendly fallback
+// the server's message, or a friendly fallback
 export const errorMessage = (err, fallback = "Something went wrong") =>
-  err.response?.data?.message || (err.request ? "Server se connect nahi ho paaya" : fallback);
+  err.response?.data?.message || (err.request ? "Could not connect to the server" : fallback);
 
 export default api;

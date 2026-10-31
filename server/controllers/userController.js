@@ -63,7 +63,7 @@ exports.deleteUser = asyncHandler(async (req, res) => {
     if (count > 0) throw new ApiError(400, "This faculty still has subjects. Reassign or delete them first");
   }
 
-  // student ko subjects ki enrollment list se bhi hata do
+  // also remove the student from every subject's enrolled list
   await Subject.updateMany({ students: user._id }, { $pull: { students: user._id } });
   await user.deleteOne();
   res.json({ message: "User deleted" });

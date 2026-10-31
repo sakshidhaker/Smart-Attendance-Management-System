@@ -1,7 +1,7 @@
-// role ke hisaab se pehla page
+// first page for each role
 export const homeFor = (role) => (role === "student" ? "/my-attendance" : "/dashboard");
 
-// DB me date UTC midnight pe store hoti hai, isliye UTC me hi dikhate hain
+// dates are stored at UTC midnight in the database, so they are shown in UTC as well
 export const formatDate = (iso) =>
   new Date(iso).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric", timeZone: "UTC" });
 

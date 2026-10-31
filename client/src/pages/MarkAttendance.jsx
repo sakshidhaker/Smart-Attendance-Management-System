@@ -23,13 +23,13 @@ export default function MarkAttendance() {
         setSubjects(res.data);
         if (res.data.length) setSubjectId(res.data[0]._id);
       })
-      .catch((err) => toast.error(errorMessage(err, "Subjects load nahi hue")))
+      .catch((err) => toast.error(errorMessage(err, "Could not load subjects")))
       .finally(() => setLoading(false));
   }, []);
 
   const subject = subjects.find((s) => s._id === subjectId);
 
-  // subject badalte hi sab students ko default "present" kar do
+  // when the subject changes, mark every student present by default
   useEffect(() => {
     if (!subject) return;
     const init = {};
@@ -47,25 +47,25 @@ export default function MarkAttendance() {
   const presentCount = Object.values(status).filter((v) => v === "present").length;
 
   const submit = async () => {
-    if (!date) return toast.error("Date select karo");
+    if (!date) return toast.error("Select a date");
     setSaving(true);
     try {
       const records = subject.students.map((st) => ({ student: st._id, status: status[st._id] }));
       await api.post("/attendance", { subject: subjectId, date, period: Number(period), records });
       toast.success(`Attendance saved (${presentCount}/${records.length} present)`);
     } catch (err) {
-      toast.error(errorMessage(err, "Save nahi hua"));
+      toast.error(errorMessage(err, "Could not save"));
     } finally {
       setSaving(false);
     }
   };
 
   if (loading) return <Loader />;
-  if (subjects.length === 0) return <EmptyState title="No subjects assigned" text="Admin se subject assign karwao." />;
+  if (subjects.length === 0) return <EmptyState title="No subjects assigned" text="Ask the admin to assign a subject to you." />;
 
   return (
     <div>
-      <PageHeader title="Mark Attendance" subtitle="Subject, date aur period chun ke present/absent mark karo" />
+      <PageHeader title="Mark Attendance" subtitle="Choose the subject, date and period, then mark present or absent" />
 
       <div className="card filters">
         <FormField label="Subject">
@@ -108,7 +108,7 @@ export default function MarkAttendance() {
           </div>
 
           {subject.students.length === 0 ? (
-            <EmptyState title="No students enrolled" text="Admin se is subject me students add karwao." />
+            <EmptyState title="No students enrolled" text="Ask the admin to enroll students in this subject." />
           ) : (
             <div className="table-wrap">
               <table>

@@ -3,12 +3,12 @@ const User = require("../models/User");
 const ApiError = require("../utils/ApiError");
 const asyncHandler = require("../utils/asyncHandler");
 
-// Token verify karke req.user set karta hai
+// Verifies the token and sets req.user
 exports.protect = asyncHandler(async (req, res, next) => {
   const header = req.headers.authorization;
   if (!header || !header.startsWith("Bearer ")) throw new ApiError(401, "Token missing");
 
-  // galat/expired token pe jwt.verify error deta hai, errorHandler use 401 bana deta hai
+  // jwt.verify throws on a wrong or expired token, and the errorHandler turns it into a 401
   const decoded = jwt.verify(header.split(" ")[1], process.env.JWT_SECRET);
   const user = await User.findById(decoded.id);
   if (!user) throw new ApiError(401, "User not found");

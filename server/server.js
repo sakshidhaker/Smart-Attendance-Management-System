@@ -1,7 +1,7 @@
 require("dotenv").config();
 const connectDB = require("./config/db");
 
-// JWT_SECRET ya MONGO_URI nahi hai to server start hi na ho
+// do not start the server if JWT_SECRET or MONGO_URI is missing
 if (!process.env.JWT_SECRET || !process.env.MONGO_URI) {
   console.error("Missing JWT_SECRET or MONGO_URI in .env");
   process.exit(1);

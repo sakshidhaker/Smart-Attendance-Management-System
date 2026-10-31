@@ -1,4 +1,4 @@
-// Dashboard ke number cards. tone: indigo | teal | safe | warning | danger
+// Number cards for the dashboard. tone: indigo | teal | safe | warning | danger
 export default function StatCard({ label, value, hint, tone = "indigo" }) {
   return (
     <div className={`stat ${tone}`}>

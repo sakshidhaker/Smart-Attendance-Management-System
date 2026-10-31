@@ -1,4 +1,4 @@
-// Client-side form validation. Har function { field: "error message" } object deta hai (khaali = sab theek)
+// Client-side form validation. Every function returns a { field: "error message" } object (empty = valid)
 
 export const isEmail = (v) => /^\S+@\S+\.\S+$/.test(v || "");
 

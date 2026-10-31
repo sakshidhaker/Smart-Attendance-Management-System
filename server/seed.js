@@ -42,7 +42,7 @@ const Attendance = require("./models/Attendance");
 
   for (let k = 1; k <= 30; k++) {
     const date = new Date(today.getTime() - k * 86400000);
-    if (date.getUTCDay() === 0) continue; // Sunday chhutti
+    if (date.getUTCDay() === 0) continue; // Sunday is a holiday
 
     subjects.forEach((sub, si) => {
       docs.push({
@@ -52,7 +52,7 @@ const Attendance = require("./models/Attendance");
         markedBy: sub.faculty,
         records: studentIds.map((id, i) => ({
           student: id,
-          // Student 1 ka chance sabse kam, Student 10 ka sabse zyada
+          // Student 1 has the lowest chance of being present, Student 10 the highest
           status: Math.random() < 0.55 + i * 0.04 ? "present" : "absent",
         })),
       });
@@ -60,7 +60,7 @@ const Attendance = require("./models/Attendance");
   }
 
   await Attendance.insertMany(docs);
-  // indexes ban chuke hain ya nahi, confirm
+  // make sure the indexes are built
   await Promise.all([User.init(), Subject.init(), Attendance.init()]);
 
   console.log(`Done: ${students.length} students, ${subjects.length} subjects, ${docs.length} attendance sheets`);

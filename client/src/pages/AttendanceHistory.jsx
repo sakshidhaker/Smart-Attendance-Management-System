@@ -10,7 +10,7 @@ import DataTable from "../components/DataTable";
 import Modal from "../components/Modal";
 import ConfirmModal from "../components/ConfirmModal";
 
-// Purani attendance sheets dekho, edit (PUT) ya delete (DELETE) karo
+// View earlier attendance sheets, then edit (PUT) or delete (DELETE) them
 export default function AttendanceHistory() {
   const [subjects, setSubjects] = useState([]);
   const [subjectId, setSubjectId] = useState("");
@@ -29,7 +29,7 @@ export default function AttendanceHistory() {
         else setLoading(false);
       })
       .catch((err) => {
-        toast.error(errorMessage(err, "Subjects load nahi hue"));
+        toast.error(errorMessage(err, "Could not load subjects"));
         setLoading(false);
       });
   }, []);
@@ -40,7 +40,7 @@ export default function AttendanceHistory() {
     api
       .get(`/attendance?subject=${subjectId}`)
       .then((res) => setSheets(res.data))
-      .catch((err) => toast.error(errorMessage(err, "History load nahi hui")))
+      .catch((err) => toast.error(errorMessage(err, "Could not load the history")))
       .finally(() => setLoading(false));
   }, [subjectId]);
 
@@ -69,7 +69,7 @@ export default function AttendanceHistory() {
       setEditing(null);
       loadSheets();
     } catch (err) {
-      toast.error(errorMessage(err, "Update nahi hua"));
+      toast.error(errorMessage(err, "Could not update"));
     } finally {
       setBusy(false);
     }
@@ -83,7 +83,7 @@ export default function AttendanceHistory() {
       setDeleting(null);
       loadSheets();
     } catch (err) {
-      toast.error(errorMessage(err, "Delete nahi hua"));
+      toast.error(errorMessage(err, "Could not delete"));
     } finally {
       setBusy(false);
     }
@@ -115,7 +115,7 @@ export default function AttendanceHistory() {
 
   return (
     <div>
-      <PageHeader title="Attendance History" subtitle="Pehle mark ki gayi attendance ko edit ya delete karo" />
+      <PageHeader title="Attendance History" subtitle="Edit or delete attendance that was marked earlier" />
 
       {subjects.length > 0 && (
         <div className="card filters one">
@@ -135,7 +135,7 @@ export default function AttendanceHistory() {
         <Loader />
       ) : (
         <div className="card">
-          <DataTable columns={columns} rows={sheets} emptyTitle="No attendance sheets" emptyText="Is subject ki abhi koi attendance mark nahi hui." />
+          <DataTable columns={columns} rows={sheets} emptyTitle="No attendance sheets" emptyText="No attendance has been marked for this subject yet." />
         </div>
       )}
 
@@ -181,7 +181,7 @@ export default function AttendanceHistory() {
 
       <ConfirmModal
         open={!!deleting}
-        message={deleting ? `${deleting.subject.code} ki ${formatDate(deleting.date)} (Period ${deleting.period}) ki attendance delete ho jayegi.` : ""}
+        message={deleting ? `The attendance of ${deleting.subject.code} on ${formatDate(deleting.date)} (Period ${deleting.period}) will be deleted.` : ""}
         loading={busy}
         onConfirm={confirmDelete}
         onCancel={() => setDeleting(null)}

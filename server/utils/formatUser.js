@@ -1,4 +1,4 @@
-// password kabhi response me nahi jaana chahiye
+// the password must never be sent in a response
 module.exports = (u) => ({
   id: u._id,
   name: u.name,

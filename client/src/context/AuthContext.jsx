@@ -24,7 +24,7 @@ export function AuthProvider({ children }) {
 
   const register = async (form) => saveSession((await api.post("/auth/register", form)).data);
 
-  // profile update ke baad stored user refresh karne ke liye
+  // refreshes the stored user after a profile update
   const updateUser = (u) => {
     localStorage.setItem("user", JSON.stringify(u));
     setUser(u);

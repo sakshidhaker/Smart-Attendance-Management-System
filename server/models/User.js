@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema(
     email: {
       type: String,
       required: [true, "Email is required"],
-      unique: true, // unique index (login ke time email se search hota hai)
+      unique: true, // unique index (login looks users up by email)
       lowercase: true,
       trim: true,
       match: [/^\S+@\S+\.\S+$/, "Invalid email"],
@@ -20,10 +20,10 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Admin ki list filter (role + semester) fast ho
+// speeds up the admin list filters (role + semester)
 userSchema.index({ role: 1, semester: 1 });
 
-// save se pehle password hash ho jayega
+// hash the password before saving
 userSchema.pre("save", async function () {
   if (!this.isModified("password")) return;
   this.password = await bcrypt.hash(this.password, 10);

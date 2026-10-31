@@ -1,4 +1,4 @@
-// Kuch networks pe SRV DNS lookup fail hota hai, isliye Google DNS set kiya hai
+// SRV DNS lookups fail on some networks, so Google DNS is set explicitly
 require("dns").setServers(["8.8.8.8", "1.1.1.1"]);
 const mongoose = require("mongoose");
 

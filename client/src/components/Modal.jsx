@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-// Popup. Escape dabane ya bahar click karne par band hota hai
+// Popup dialog. Closes on Escape or when the backdrop is clicked
 export default function Modal({ open, title, onClose, children, wide }) {
   useEffect(() => {
     if (!open) return;

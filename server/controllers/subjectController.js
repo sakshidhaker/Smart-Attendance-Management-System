@@ -5,7 +5,7 @@ const User = require("../models/User");
 const ApiError = require("../utils/ApiError");
 const asyncHandler = require("../utils/asyncHandler");
 
-// faculty asli faculty user ho aur students asli student users hon
+// the faculty must be a real faculty user and the students must be real student users
 const checkPeople = async (facultyId, studentIds) => {
   if (facultyId) {
     const f = await User.findById(facultyId).select("role");
@@ -21,7 +21,7 @@ const checkPeople = async (facultyId, studentIds) => {
   return undefined;
 };
 
-// GET /api/subjects  (role ke hisaab se apne subjects)
+// GET /api/subjects  (the list depends on the user's role)
 exports.listSubjects = asyncHandler(async (req, res) => {
   const filter = {};
   if (req.user.role === "faculty") filter.faculty = req.user._id;
@@ -82,7 +82,7 @@ exports.updateSubject = asyncHandler(async (req, res) => {
   res.json(subject);
 });
 
-// DELETE /api/subjects/:id  (admin) -> us subject ki attendance bhi delete
+// DELETE /api/subjects/:id  (admin) -> also deletes that subject's attendance
 exports.deleteSubject = asyncHandler(async (req, res) => {
   const subject = await Subject.findById(req.params.id);
   if (!subject) throw new ApiError(404, "Subject not found");

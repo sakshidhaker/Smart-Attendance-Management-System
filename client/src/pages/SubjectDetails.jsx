@@ -9,7 +9,7 @@ import StatCard from "../components/StatCard";
 import DataTable from "../components/DataTable";
 import StatusBadge from "../components/StatusBadge";
 
-// /subjects/:id  ->  useParams se id leke subject ki detail + students ka attendance
+// /subjects/:id  ->  reads the id with useParams, then shows the subject and its students' attendance
 export default function SubjectDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -28,7 +28,7 @@ export default function SubjectDetails() {
       })
       .catch((err) => {
         setFailed(true);
-        toast.error(errorMessage(err, "Subject load nahi hua"));
+        toast.error(errorMessage(err, "Could not load the subject"));
       })
       .finally(() => setLoading(false));
   }, [id]);
@@ -36,7 +36,7 @@ export default function SubjectDetails() {
   if (loading) return <Loader />;
   if (failed || !subject || !summary) {
     return (
-      <EmptyState title="Subject not found" text="Ye subject nahi mila ya aapko iska access nahi hai.">
+      <EmptyState title="Subject not found" text="This subject was not found, or you do not have access to it.">
         <button className="btn primary" onClick={() => navigate(-1)}>
           Go back
         </button>

@@ -1,12 +1,12 @@
 const mongoose = require("mongoose");
 const ApiError = require("../utils/ApiError");
 
-// min/max ke message me "characters" ya "items" likhne ke liye
+// adds "characters" or "items" to the min/max error messages
 const unit = (v) => (typeof v === "string" ? " characters" : Array.isArray(v) ? " items" : "");
 
 const isEmail = (v) => typeof v === "string" && /^\S+@\S+\.\S+$/.test(v);
 
-// URL ke :id ko check karta hai (galat id pe 400)
+// checks the :id in the URL (400 for an invalid id)
 exports.validateObjectId =
   (...params) =>
   (req, res, next) => {
@@ -24,8 +24,8 @@ exports.validateObjectId =
     password: { required: true, type: "string", min: 6 },
   })
   type: string | email | number | integer | objectId | array | date | boolean
-  min/max: string ki length, number ki value ya array ki length pe lagta hai
-  oneOf: allowed values ki list
+  min/max: applies to string length, number value or array length
+  oneOf: list of allowed values
 */
 exports.validateBody = (rules) => (req, res, next) => {
   const body = req.body || {};
@@ -69,7 +69,7 @@ exports.validateBody = (rules) => (req, res, next) => {
         break;
     }
 
-    if (errors.length > before) continue; // is field ki type galat hai, aage check mat karo
+    if (errors.length > before) continue; // the type of this field is wrong, skip the remaining checks
 
     if (rule.min !== undefined) {
       const size = typeof v === "string" || Array.isArray(v) ? v.length : v;

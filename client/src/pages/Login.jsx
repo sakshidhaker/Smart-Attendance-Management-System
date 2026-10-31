@@ -15,7 +15,7 @@ export default function Login() {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
-  // page khulte hi email box me cursor
+  // put the cursor in the email box as soon as the page opens
   useEffect(() => {
     emailRef.current?.focus();
   }, []);
